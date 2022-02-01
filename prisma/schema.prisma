@@ -9,3 +9,47 @@ datasource db {
   provider = "mysql"
   url      = env("DATABASE_URL")
 }
+
+model User {
+  id          Int @id @default(autoincrement())
+  name        String
+  email       String @unique
+  password    String
+  createdAt   DateTime @default(now())
+  products    Cart[]
+
+  @@map("users")
+}
+
+model Product {
+  id          Int @id @default(autoincrement())
+  name        String @unique
+  description String
+  price       Int
+  stock       Int
+  sku         String
+  createdAt   DateTime @default(now())
+  Category    Category? @relation(fields: [categoryId], references: [id])
+  categoryId  Int
+  users  Cart[]
+
+  @@map("products")
+}
+
+model Category {
+  id          Int @id @default(autoincrement())
+  name        String @unique
+  products    Product[]
+  createdAt   DateTime @default(now())
+
+  @@map("categories")
+}
+
+model Cart {
+  id  Int   @id @default(autoincrement())
+  user User @relation(fields: [userId], references: [id])
+  userId  Int
+  product Product @relation(fields: [productId], references: [id])
+  productId Int
+  quantity  Int
+}
